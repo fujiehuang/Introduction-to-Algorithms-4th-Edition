@@ -1,35 +1,4 @@
 #!/usr/bin/env python3
-# max_heap.py
-
-# Introduction to Algorithms, Fourth edition
-# Linda Xiao and Tom Cormen
-
-#########################################################################
-#                                                                       #
-# Copyright 2022 Massachusetts Institute of Technology                  #
-#                                                                       #
-# Permission is hereby granted, free of charge, to any person obtaining #
-# a copy of this software and associated documentation files (the       #
-# "Software"), to deal in the Software without restriction, including   #
-# without limitation the rights to use, copy, modify, merge, publish,   #
-# distribute, sublicense, and/or sell copies of the Software, and to    #
-# permit persons to whom the Software is furnished to do so, subject to #
-# the following conditions:                                             #
-#                                                                       #
-# The above copyright notice and this permission notice shall be        #
-# included in all copies or substantial portions of the Software.       #
-#                                                                       #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       #
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    #
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                 #
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   #
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    #
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     #
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      #
-# SOFTWARE.                                                             #
-#                                                                       #
-#########################################################################
-
 """Base class for MaxHeap and MinHeap."""
 
 
@@ -38,12 +7,14 @@ class Heap:
         """Initialize a heap with an array and heap size.
 
         Arguments:
-        compare -- comparison function: greater-than for a max-heap, less-than for a min-heap
+        compare -- comparison function: greater-than for a max-heap, 
+        less-than for a min-heap
         array -- array of heap elements.
         get_key_func -- an optional function that returns the key for the
-        objects stored. If given, may be a static function in the object class. If
-        omitted, then the identity function is used.
-        dict -- an optional dictionary mapping objects in the max-heap to indices.
+        objects stored. If given, may be a static function in the object class. 
+        If omitted, then the identity function is used.
+        dict -- an optional dictionary mapping objects in 
+        the max-heap to indices.
         """
         self.compare = compare
         self.array = array
@@ -60,7 +31,8 @@ class Heap:
         self.dict = dict
         if self.dict is not None:
             if len(self.dict) > 0:
-                raise RuntimeError("Dictionary argument to constructor must be None or an empty dictionary.")
+                raise RuntimeError("Dictionary argument to constructor"
+                                   " must be None or an empty dictionary.")
             for i in range(self.heap_size):
                 dict[self.array[i]] = i
 
@@ -108,12 +80,15 @@ class Heap:
         l = self.left(i)
         r = self.right(i)
 
-        if l < self.heap_size and self.compare(self.get_key(self.array[l]), self.get_key(self.array[i])):
+        if l < self.heap_size and self.compare(self.get_key(self.array[l]), 
+                                               self.get_key(self.array[i])):
             swap_with = l
         else:
             swap_with = i
 
-        if r < self.heap_size and self.compare(self.get_key(self.array[r]), self.get_key(self.array[swap_with])):
+        if r < self.heap_size and self.compare(self.get_key(self.array[r]), 
+                                               self.get_key(
+                                                   self.array[swap_with])):
             swap_with = r
 
         if swap_with != i:
@@ -122,7 +97,8 @@ class Heap:
 
     def build_heap(self):
         """Convert a list or numpy array into a heap."""
-        # Run heapify on all roots of the tree, from ((heap_size // 2) - 1) to 0.
+        # Run heapify on all roots of the tree, 
+        # from ((heap_size // 2) - 1) to 0.
         self.heap_size = len(self.array)
         for i in range((len(self.array) // 2) - 1, -1, -1):
             self.heapify(i)
@@ -136,11 +112,13 @@ class Heap:
         # From root node to last internal node.
         for i in range(0, self.heap_size // 2):
             # Check the left child.
-            if self.compare(self.get_key(self.array[self.left(i)]), self.get_key(self.array[i])):
+            if self.compare(self.get_key(self.array[self.left(i)]), 
+                            self.get_key(self.array[i])):
                 return False
             # If there is a right child, check it.
             if self.right(i) < self.heap_size and \
-                    self.compare(self.get_key(self.array[self.right(i)]), self.get_key(self.array[i])):
+                    self.compare(self.get_key(self.array[self.right(i)]), 
+                                 self.get_key(self.array[i])):
                 return False
 
         return True

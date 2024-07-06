@@ -1,49 +1,19 @@
 #!/usr/bin/env python3
-# b_tree.py
-
-# Introduction to Algorithms, Fourth edition
-# Linda Xiao and Tom Cormen
-
-#########################################################################
-#                                                                       #
-# Copyright 2022 Massachusetts Institute of Technology                  #
-#                                                                       #
-# Permission is hereby granted, free of charge, to any person obtaining #
-# a copy of this software and associated documentation files (the       #
-# "Software"), to deal in the Software without restriction, including   #
-# without limitation the rights to use, copy, modify, merge, publish,   #
-# distribute, sublicense, and/or sell copies of the Software, and to    #
-# permit persons to whom the Software is furnished to do so, subject to #
-# the following conditions:                                             #
-#                                                                       #
-# The above copyright notice and this permission notice shall be        #
-# included in all copies or substantial portions of the Software.       #
-#                                                                       #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       #
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    #
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                 #
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   #
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    #
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     #
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      #
-# SOFTWARE.                                                             #
-#                                                                       #
-#########################################################################
-
 class BTreeNode:
 
 	def __init__(self, n, max_keys, leaf):
-		"""Initialize a node of B-tree with number of keys and a boolean indicating whether it is a leaf.
+		"""Initialize a node of B-tree with number of keys and 
+	  a boolean indicating whether it is a leaf.
 
 		Arguments:
 		n -- number of keys currently stored
 		leaf -- True if the node is a leaf, False if not
 		"""
-		self.n = n          # number of keys currently stored
-		self.leaf = leaf    # boolean if node is a leaf
-		self.key = [None] * max_keys 	# the keys themselves
+		self.n = n          
+		self.leaf = leaf    
+		self.key = [None] * max_keys 	
 		if not leaf:
-			self.c = [None] * (max_keys + 1)  # internal nodes store pointers to children
+			self.c = [None] * (max_keys + 1)  
 
 	def disk_read(self):
 		"""Placeholder for code to read in the disk block containing this node."""
@@ -70,7 +40,8 @@ class BTreeNode:
 		# Have we discovered key k?
 		if i < self.n and k == self.key[i]:
 			return self, i
-		# Either terminate the search unsuccessfully or recursively search a subtree.
+		# Either terminate the search unsuccessfully 
+    # or recursively search a subtree.
 		elif self.leaf:
 			return None
 		else:
@@ -96,7 +67,8 @@ class BTreeNode:
 			return self.c[0].find_smallest_in_subtree()
 
 	def shift_left(self, i):
-		"""Shift one position to the left keys and children, if this node has children.
+		"""Shift one position to the left keys and children, 
+	  if this node has children.
 		Used for delete. 
 
 		Argument:
@@ -109,7 +81,8 @@ class BTreeNode:
 		self.n -= 1
 
 	def shift_right(self, i):
-		"""Shift one position to the right keys and children, if this node has children.
+		"""Shift one position to the right keys and children, 
+	  if this node has children.
 		Used for delete.
 
 		Argument:
@@ -154,20 +127,21 @@ class BTree:
 		"""
 		y = x.c[i]  # full node to split
 		z = BTreeNode(self.t - 1, self.max_keys, y.leaf)  # z will take half of y
-		z.key[: self.t - 1] = y.key[self.t: 2 * self.t - 1]  # z gets y's greatest keys
+		z.key[: self.t - 1] = y.key[self.t: 2 * self.t - 1]  
+		# z gets y's greatest keys
 
 		if not y.leaf:
-			z.c[: self.t] = y.c[self.t: 2 * self.t]  # z gets y's corresponding children
+			z.c[: self.t] = y.c[self.t: 2 * self.t]  
 
-		y.n = self.t - 1  # y keeps t-1 keys
+		y.n = self.t - 1  
 
-		x.c[i + 2: x.n + 2] = x.c[i + 1: x.n + 1]  # shift x's children to the right ...
-		x.c[i + 1] = z  # ... to make room for z as a child
+		x.c[i + 2: x.n + 2] = x.c[i + 1: x.n + 1]  
+		x.c[i + 1] = z  
 
-		x.key[i + 1: x.n + 1] = x.key[i: x.n]  # shift the corresponding keys in x
-		x.key[i] = y.key[self.t - 1]  # insert y's median k
+		x.key[i + 1: x.n + 1] = x.key[i: x.n] 
+		x.key[i] = y.key[self.t - 1] 
 
-		x.n += 1  # x has gained a child
+		x.n += 1
 
 		y.disk_write()
 		z.disk_write()
@@ -192,23 +166,23 @@ class BTree:
 
 	def insert_nonfull(self, x, k):
 		"""Insert key k into non-full node x."""
-		i = x.n - 1  # index of last element
-		if x.leaf:  # inserting into a leaf?
-			while i >= 0 and k < x.key[i]:  # shift keys in x to make room for the key
+		i = x.n - 1  
+		if x.leaf:  
+			while i >= 0 and k < x.key[i]:  
 				x.key[i + 1] = x.key[i]
 				i -= 1
-			# i may be -1 or key[i] is the rightmost key <= k.
-			x.key[i + 1] = k  # insert key k in x
-			x.n += 1  # now x has one more key
+			
+			x.key[i + 1] = k
+			x.n += 1
 			x.disk_write()
 		else:
-			while i >= 0 and k < x.key[i]:  # find the child where key k belongs
+			while i >= 0 and k < x.key[i]:  
 				i -= 1
 			i += 1
 			x.c[i].disk_read()
-			if x.c[i].n == self.max_keys:  # split the child if it's full
+			if x.c[i].n == self.max_keys:  
 				self.split_child(x, i)
-				if k > x.key[i]:  # does key k go into child i or child i+1?
+				if k > x.key[i]:  
 					i += 1
 			self.insert_nonfull(x.c[i], k)
 
@@ -233,7 +207,8 @@ class BTree:
 			if i < x.n and x.key[i] == k:  # key k is in x.key[i]
 				self.delete_from_internal_node(x, i)
 			else:
-				# If key k is in the subtree, it's in the subtree rooted at child x.c[i].
+				# If key k is in the subtree, 
+        # it's in the subtree rooted at child x.c[i].
 				child = x.c[i]
 				child.disk_read()
 				self.ensure_full_enough(x, i)
@@ -265,28 +240,29 @@ class BTree:
 		y.disk_read()
 		if y.n >= self.t:
 			# Case 2a: y (= x.c[i]) has at least t keys.
-			k_prime = y.find_greatest_in_subtree()  # find the predecessor k' of key k in the subtree rooted at y
-			y.disk_read()  # because descending through y's subtree might have evicted y from memory
-			self.delete_from_subtree(y, k_prime)  # recursively delete key k'
-			x.disk_read()  # because deleting key k' might have evicted x from memory
-			x.key[i] = k_prime  # replace key k by k'
+			k_prime = y.find_greatest_in_subtree() 
+			y.disk_read()  
+			self.delete_from_subtree(y, k_prime)
+			x.disk_read() 
+			x.key[i] = k_prime  
 			x.disk_write()
 		else:  # y has fewer than t keys
 			z = x.c[i + 1]
 			z.disk_read()
-			# Symmetrically, examine the child z that follows key k in node x.
 			if z.n >= self.t:
 				# Case 2b: z (= x.c[i+1]) has at least t keys.  Symmetric to case 2a.
-				k_prime = z.find_smallest_in_subtree()  # find the successor key k' of k in the subtree rooted at z
-				z.disk_read()  # because descending through z's subtree might have evicted z from memory
-				self.delete_from_subtree(z, k_prime)  # recursively delete key k'
-				x.disk_read()  # because deleting key k' might have evicted x from memory
-				x.key[i] = k_prime  # replace key k by k'
+				k_prime = z.find_smallest_in_subtree()  
+				z.disk_read() 
+				self.delete_from_subtree(z, k_prime)  
+				x.disk_read()  
+				x.key[i] = k_prime 
 				x.disk_write()
 			else:
 				# Case 2c: Both y and z have t-1 keys.
-				# Merge key k and all of z into y, so that x loses both k and the pointer to z.
-				# y then contains 2t-1 keys.  Free z and recursively delete key k from y.
+				# Merge key k and all of z into y, 
+        # so that x loses both k and the pointer to z.
+				# y then contains 2t-1 keys.  
+        # Free z and recursively delete key k from y.
 				k = x.key[i]
 				y.key[y.n] = k  # merge key k into y
 				y.key[y.n + 1: y.n + z.n + 1] = z.key[: z.n]  # merge z into y
@@ -334,9 +310,8 @@ class BTree:
 			# and move a child pointer from left_sibling into child.
 			child.shift_right(0)  # make room
 
-			# Move a key down from node x into child and from left sibling into node x.
-			child.key[0] = x.key[i - 1]  # move a key from x into child
-			x.key[i - 1] = left_sibling.key[left_n - 1]  # move a key from left_sibling up into x
+			child.key[0] = x.key[i - 1]  
+			x.key[i - 1] = left_sibling.key[left_n - 1] 
 			left_sibling.key[left_n - 1] = None
 
 			if not child.leaf:
@@ -364,14 +339,15 @@ class BTree:
 				# Case 3a: x's right sibling has at least t keys.
 				# Move a key from x into child, move a key from right_sibling up into x,
 				# and move a child pointer from right_sibling into child.
-				child.key[child.n] = x.key[i]  # move a key from x into child
-				x.key[i] = right_sibling.key[0]  # move a key from right_sibling up into x
+				child.key[child.n] = x.key[i]  
+				x.key[i] = right_sibling.key[0] 
 
 				if not child.leaf:
 					# Move appropriate child pointer from right_sibling into child.
 					child.c[child.n + 1] = right_sibling.c[0]
 
-				# Move all the right sibling's keys and child pointers to the left by one position.
+				# Move all the right sibling's keys and 
+        # child pointers to the left by one position.
 				right_sibling.shift_left(0)
 				child.n += 1
 
@@ -383,7 +359,8 @@ class BTree:
 				# Merge the child with one sibling, including moving a key from x down
 				# into the new merged node as the median key of the merged node.
 				if left_n > 0:
-					# The child has a left sibling.  Merge the child with the left sibling.
+					# The child has a left sibling.  
+          # Merge the child with the left sibling.
 
 					# Move everything in child right by t positions.
 					child.key[self.t: self.t + child.n] = child.key[: child.n]
@@ -400,7 +377,8 @@ class BTree:
 					child.n += left_n + 1
 
 					# Since node x is losing key i - 1 and child pointer i - 1,
-					# move keys i to n - 1 and children i to n left by one position in this node.
+					# move keys i to n - 1 and children i to n left by one 
+          # position in this node.
 					x.shift_left(i - 1)
 
 					left_sibling.free()
@@ -411,16 +389,19 @@ class BTree:
 					# Merge the child with the right sibling.
 
 					# Take everything from right_sibling.
-					child.key[child.n + 1: right_n + child.n + 1] = right_sibling.key[: right_n]
+					child.key[child.n + 1: right_n + child.n + 1] = \
+			      right_sibling.key[: right_n]
 					if not child.leaf:
-						child.c[child.n + 1: right_n + child.n + 2] = right_sibling.c[: right_n + 1]
+						child.c[child.n + 1: right_n + child.n + 2] = \
+			        right_sibling.c[: right_n + 1]
 
 					# Move a key down from node x into the child.
 					child.key[self.t - 1] = x.key[i]
 					child.n += right_n + 1
 
 					# Since node x is losing key i and child pointer i,
-					# move keys i + 1 to n - 1 and children i + 2 to n left by one position in this node.
+					# move keys i + 1 to n - 1 and children i + 2 to 
+          # n left by one position in this node.
 					x.key[i: x.n] = x.key[i + 1: x.n] + [None]
 					if not x.leaf:
 						x.c[i + 1: x.n] = x.c[i + 2: x.n + 1]
@@ -479,12 +460,14 @@ class BTree:
 		else:  # recurse into the subtree rooted at this node
 			node_depth += 1
 			for i in range(node.n):
-				if not self.check_leaf_depths_helper(node.c[i], node_depth, target_depth):
+				if not self.check_leaf_depths_helper(node.c[i], node_depth, 
+										 target_depth):
 					return False  # some leaf has the wrong depth
 			return True  # leaves in all subtrees are OK
 
 	def is_btree_helper(self, node):
-		"""Helper function to determine if the subtree rooted at a node has some properties of B-trees."""
+		"""Helper function to determine if the subtree 
+	  rooted at a node has some properties of B-trees."""
 		# This node must have between t-1 and 2t-1 keys.
 		if node != self.root:
 			if not self.t - 1 <= node.n <= 2 * self.t - 1:

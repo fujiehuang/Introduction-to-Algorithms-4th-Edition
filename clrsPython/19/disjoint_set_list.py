@@ -1,35 +1,4 @@
 #!/usr/bin/env python3
-# disjoint_set_list.py
-
-# Introduction to Algorithms, Fourth edition
-# Linda Xiao and Tom Cormen
-
-#########################################################################
-#                                                                       #
-# Copyright 2022 Massachusetts Institute of Technology                  #
-#                                                                       #
-# Permission is hereby granted, free of charge, to any person obtaining #
-# a copy of this software and associated documentation files (the       #
-# "Software"), to deal in the Software without restriction, including   #
-# without limitation the rights to use, copy, modify, merge, publish,   #
-# distribute, sublicense, and/or sell copies of the Software, and to    #
-# permit persons to whom the Software is furnished to do so, subject to #
-# the following conditions:                                             #
-#                                                                       #
-# The above copyright notice and this permission notice shall be        #
-# included in all copies or substantial portions of the Software.       #
-#                                                                       #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       #
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    #
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                 #
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS   #
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN    #
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN     #
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE      #
-# SOFTWARE.                                                             #
-#                                                                       #
-#########################################################################
-
 """Disjoint-set data structure maintains a collection of disjoint dynamic sets.
 We identify each set by a representative.
 """
@@ -51,7 +20,8 @@ class DisjointSetListNode:
 class DisjointSetList:
 
 	def __init__(self, node):
-		"""Initialize the list implementation of a disjoint set with one node."""
+		"""Initialize the list implementation of 
+		a disjoint set with one node."""
 		self.head = node  # linked list head
 		self.tail = node  # linked list tail
 		self.size = 1
